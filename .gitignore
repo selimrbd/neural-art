@@ -1,1 +1,6 @@
-model
+model/
+.ipynb_checkpoints/*
+*.ico
+*.png
+*.jpg
+*.jpeg
