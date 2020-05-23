@@ -4,27 +4,38 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 from modules.nst import apply_neural_style_transfer
+from pathlib import Path
+import base64
+from flask import send_from_directory
+import time
+
+IMG_USER_DIRECTORY = Path('assets/images/user')
+IMG_CONTENT_DIRECTORY = Path('assets/images/content')
+IMG_STYLE_DIRECTORY = Path('assets/images/style')
+IMG_OTHER_DIRECTORY = Path('assets/images/other')
+
+if not IMG_USER_DIRECTORY.exists():
+    USER_DIRECTORY.mkdir()
+img_box_width = '400px'
+img_box_height = '400px'
+img_box_margin = '10px'
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 
-img_box_width = '400px'
-img_box_margin = '10px'
-
-
-def create_image_box(id_box, path_default_img='assets/images/brad_pitt.jpg', button1_txt = 'Select an Image', elmt2_type='upload', elmt2_msg=html.Div(['Drag and Drop or ', html.A('Select Files')])):
+## create the element containing the image + image selection / upload / download
+def create_image_box(id_box, path_default_img, button1_txt='Select an Image', elmt2_type='upload', elmt2_msg=html.Div(['Drag and Drop or ', html.A('Select Files')])):
     
     elmt_list = list()
-
     ## add image
-    elmt_img =  html.Img(id=id_box+'-img', src=path_default_img,
+    elmt_img =  html.Img(id=id_box+'-img', src=str(path_default_img),
                  style={
                      'display':'block',
                      'borderWidth':'1px',
                      'width':img_box_width,
-                     'height':img_box_width,
+                     'height':img_box_height,
                      'margin':img_box_margin
                      }
                  )
@@ -59,22 +70,25 @@ def create_image_box(id_box, path_default_img='assets/images/brad_pitt.jpg', but
                   multiple=False #Allow multiple files to be uploaded
              )
          elmt_list.append(elmt_upload)
-    elif elmt2_type == 'button':
-        elmt_button2 = html.Button(elmt2_msg, id=id_box+'-button-2', n_clicks=0,
-                        style={
-                            'display':'block',
-                            'width':img_box_width,
-                            'margin':img_box_margin
-                        })
-        elmt_list.append(elmt_button2)
-    #elmt_list.append(elmt_upload)
+    elif elmt2_type == 'download-button':
+        elmt_download_button = html.Div(id=id_box+'-download-button-container',
+                                children=[html.Form(id=f'{id_box}-download-form', children=[html.Button("Download Image !", id=f'{id_box}-download-button',
+                                                                                            style={
+                                                                                                'display':'block',
+                                                                                                'width':img_box_width,
+                                                                                                'margin':img_box_margin
+                                                                                            })],
+                                                    action='')],
+                                style={'margin':'0px', 'padding':'0px'})
+        elmt_list.append(elmt_download_button)
+    
     img_box = html.Div(children=elmt_list, style={'margin': '20px'})
     return img_box
 
 
-img_box1 = create_image_box('box-1', button1_txt = 'Select a Content Image', path_default_img='assets/images/brad_pitt.jpg')
-img_box2 = create_image_box('box-2', button1_txt = 'Select a Style Image', path_default_img='assets/images/mosaic.jpg')
-img_box3 = create_image_box('box-3', button1_txt = 'Get Result Image', path_default_img='assets/images/gray.jpeg', elmt2_type='button', elmt2_msg='Download Image !')
+img_box1 = create_image_box('box-1', button1_txt = 'Select a Content Image', path_default_img=IMG_CONTENT_DIRECTORY/'brad_pitt.jpg')
+img_box2 = create_image_box('box-2', button1_txt = 'Select a Style Image', path_default_img=IMG_STYLE_DIRECTORY/'mosaic.jpg')
+img_box3 = create_image_box('box-3', button1_txt = 'Get Result Image', path_default_img=IMG_OTHER_DIRECTORY/'no_picture.jpg', elmt2_type='download-button', elmt2_msg='Download Image !')
 
 app.layout = html.Div(children=[
     html.H1(children='Pictulize'),
@@ -84,9 +98,41 @@ app.layout = html.Div(children=[
         img_box1,
         img_box2,
         img_box3
-        ], style={'display':'flex', 'margin-left':'200px'})
+        ], style={'display':'flex', 'margin-left':'200px'}),
+    html.Div(id='void')
 ])
 
+## handle user picture upload
+def save_file(name, content, save_dir):
+    """Decode and store a file uploaded with Plotly Dash."""
+    save_dir = Path(save_dir)
+    data = content.encode("utf8").split(b";base64,")[1]
+    path_file = str(save_dir/name)
+    with open(save_dir/name, "wb") as fp:
+        fp.write(base64.decodebytes(data))
+    return path_file
+
+
+def create_callback_img_upload(id_img, id_upload, path_default_img, path_save_dir):
+    @app.callback(
+        Output(id_img, 'src'),
+        [Input(id_upload, 'filename'), Input(id_upload, 'contents')]
+        )
+    def upload_user_img(filenames, contents):
+         if filenames is not None and contents is not None:
+             filenames = [filenames] if type(filenames) is str else filenames
+             contents = [contents] if type(contents) is str else filenames
+             for (f,c) in zip(filenames, contents):
+                 path_file = save_file(f,c, path_save_dir)
+         else:
+             path_file = str(path_default_img)
+         return path_file
+    return upload_user_img
+
+upload_user_content_img = create_callback_img_upload(id_img='box-1-img', id_upload='box-1-upload', path_default_img=IMG_CONTENT_DIRECTORY/'brad_pitt.jpg', path_save_dir=IMG_USER_DIRECTORY)
+upload_user_style_img = create_callback_img_upload(id_img='box-2-img', id_upload='box-2-upload', path_default_img=IMG_STYLE_DIRECTORY/'mosaic.jpg', path_save_dir=IMG_USER_DIRECTORY)
+
+## run neural style transfer
 class ButtonCallback():
     def __init__(self):
         self.n_clicks = {'box-1-button-1':0, 'box-2-button-1':0, 'box-3-button-1':0}
@@ -95,24 +141,40 @@ class ButtonCallback():
         self.n_clicks[bt_name] = nclicks
 
 button_callback = ButtonCallback()
-
 @app.callback(
         Output(component_id="box-3-img", component_property="src"),
         [Input(component_id='box-3-button-1', component_property='n_clicks')],
         [State(component_id="box-1-img", component_property="src"),
          State(component_id="box-2-img", component_property="src")]
         )
-def update_img_3(b3_b1_nclick, path_img_content, path_img_style):
+def run_nst(b3_b1_nclick, path_img_content, path_img_style):
     
     b3_b1_nclick = 0 if b3_b1_nclick is None else b3_b1_nclick
 
     if b3_b1_nclick != button_callback.n_clicks['box-3-button-1']:
         button_callback.update_n_clicks(b3_b1_nclick, 'box-3-button-1')
-        return apply_neural_style_transfer(path_img_content, path_img_style, path_img_output='assets/images/output.jpg')
+        path_img_output = str(Path(IMG_USER_DIRECTORY)/f'output-{time.time()}.jpg') ## add a timestamp to avoid caching problems when name doesn't change
+        return apply_neural_style_transfer(path_img_content, path_img_style, path_img_output=path_img_output)
     else:
-        return 'assets/images/gray.jpeg'
+        return str(IMG_OTHER_DIRECTORY/'no_picture.jpg')
+
+
+## download file
+@app.server.route('/download_image/<string:img_name>')
+def download_file(img_name):
+	print(f'user downloaded image: {img_name}')
+	return send_from_directory(str(IMG_USER_DIRECTORY), img_name, as_attachment=True)
+	
+@app.callback(
+        Output('box-3-download-form', 'action'),
+        [Input('box-3-img', 'src')]
+        )
+def update_download_button(path_img):
+    img_name = Path(path_img).name
+    return f'/download_image/{img_name}'
+
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8086)
-    #app.run_server(debug=False, port=8086)
+    #app.run_server(debug=True, port=8086)
+    app.run_server(debug=False, port=8086)

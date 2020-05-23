@@ -7,6 +7,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from pathlib import Path
 from PIL import Image
+import time
 
 ## paths definitions
 path_model_folder = Path('../model')
@@ -37,5 +38,7 @@ def apply_neural_style_transfer(path_img_content, path_img_style, path_img_outpu
     img_output = tf.squeeze(outputs[0],0)
     img_output = Image.fromarray(np.uint8(np.array(img_output)*255.))
     img_output.save(path_img_output)
-    
+    ## add timestamp to force browser to reload image
+    #path_img_output = path_img_output+f'?{time.time()}'
+
     return path_img_output
