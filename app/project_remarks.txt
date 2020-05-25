@@ -1,0 +1,6 @@
+For personal reference, some things I have developed or used in this project:
+
+* Function to create an ensemble of HTML elemnts, for avoiding code redundancy
+* Function to create custom callbacks, avoiding code redundancy
+* "hacky" way for displaying a "loading" image while the algorithm is running (have 1 callback on the element to modify, and another one on the parent div to recreate that element, therefore I can simulate updating an output from 2 different callbacks. This hacky way was found because dash doesn't allow 2 different callbacks to have the same output. Maybe a better solution exists (?)
+
