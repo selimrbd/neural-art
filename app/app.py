@@ -13,58 +13,71 @@ IMG_USER_DIRECTORY = Path('assets/images/user')
 IMG_CONTENT_DIRECTORY = Path('assets/images/content')
 IMG_STYLE_DIRECTORY = Path('assets/images/style')
 IMG_OTHER_DIRECTORY = Path('assets/images/other')
-
 if not IMG_USER_DIRECTORY.exists():
     USER_DIRECTORY.mkdir()
-img_box_width = '400px'
-img_box_height = '400px'
-img_box_margin = '10px'
+
+IMG_BOX_WIDTH = '400px'
+IMG_BOX_HEIGHT = '400px'
+IMG_BOX_MARGIN = '10px'
+COLOR_BUTTON_DISABLED = 'rgba(191, 191, 191, 1)'
+COLOR_BUTTON_ENABLED = 'rgba(41, 241, 195, 1)'
+
+#PATH_LOADING_ANIMATION = Path('assets/images/other/slowpoke.gif')
+#PATH_LOADING_ANIMATION = Path('assets/images/other/poulpe.gif')
+PATH_LOADING_ANIMATION = Path('assets/images/other/rainbow.gif')
+PATH_DEFAULT_CONTENT = Path('assets/images/content/brad_pitt.jpg')
+PATH_DEFAULT_STYLE = Path('assets/images/style/mosaic.jpg')
+PATH_DEFAULT_NOPICTURE = Path('assets/images/other/no_picture.jpg')
+
+DOWNLOAD_BUTTON_TEXT = 'Download'
+RUN_NST_BUTTON_TEXT = 'Combine the images !'
+PROCESSING_BUTTON_TEXT = 'Processing...'
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 
 ## create the element containing the image + image selection / upload / download
-def create_image_box(id_box, path_default_img, button1_txt='Select an Image', elmt2_type='upload', elmt2_msg=html.Div(['Drag and Drop or ', html.A('Select Files')])):
+def create_image_group(id_box, path_default_img, button1_txt='Select an Image', elmt2_type='upload', elmt2_msg=html.Div(['Drag and Drop or ', html.A('Select Files')])):
     
     elmt_list = list()
     ## add image
-    elmt_img =  html.Img(id=id_box+'-img', src=str(path_default_img),
+    id_img = f'{id_box}-img'
+    elmt_img =  html.Div(id=f'container-{id_img}', children=[html.Img(id=id_img, src=str(path_default_img),
                  style={
                      'display':'block',
-                     'borderWidth':'1px',
-                     'width':img_box_width,
-                     'height':img_box_height,
-                     'margin':img_box_margin
+                     'width':IMG_BOX_WIDTH,
+                     'height':IMG_BOX_HEIGHT,
+                     'margin':IMG_BOX_MARGIN
                      }
-                 )
+                 )])
     elmt_list.append(elmt_img)
 
     ## add button 1
-    elmt_button = html.Button(button1_txt, id=id_box+'-button-1', n_clicks=0,
+    id_button1 = f'{id_box}-button-1'
+    elmt_button = html.Div(id=f'container-{id_button1}', children=[html.Button(button1_txt, id=id_button1, n_clicks=0,
                     style={
                         'display':'block',
-                        'width':img_box_width,
-                        'margin':img_box_margin
-                    })
-
+                        'width':IMG_BOX_WIDTH,
+                        'margin':IMG_BOX_MARGIN
+                    })])
     elmt_list.append(elmt_button)
 
     ## add button 2 or upload
+    id_button2 = f'{id_box}-upload'
     if elmt2_type == "upload":
          elmt_upload = dcc.Upload(
-                  id=id_box+'-upload',
+                  id=id_button2,
                   children=elmt2_msg,
                   style={
                          'display':'block',
                          'borderWidth':'1px',
-                         'width':img_box_width,
+                         'width':IMG_BOX_WIDTH,
                          'height':'30px',
                          'borderStyle':'dashed',
                          'borderWidth':'1px',
                          'textAlign':'center',
-                         'margin':img_box_margin
+                         'margin':IMG_BOX_MARGIN
                       
                   },
                   multiple=False #Allow multiple files to be uploaded
@@ -72,11 +85,11 @@ def create_image_box(id_box, path_default_img, button1_txt='Select an Image', el
          elmt_list.append(elmt_upload)
     elif elmt2_type == 'download-button':
         elmt_download_button = html.Div(id=id_box+'-download-button-container',
-                                children=[html.Form(id=f'{id_box}-download-form', children=[html.Button("Download Image !", id=f'{id_box}-download-button',
+                                children=[html.Form(id=f'{id_box}-download-form', children=[html.Button(elmt2_msg, id=f'{id_box}-download-button',
                                                                                             style={
                                                                                                 'display':'block',
-                                                                                                'width':img_box_width,
-                                                                                                'margin':img_box_margin
+                                                                                                'width':IMG_BOX_WIDTH,
+                                                                                                'margin':IMG_BOX_MARGIN
                                                                                             })],
                                                     action='')],
                                 style={'margin':'0px', 'padding':'0px'})
@@ -86,9 +99,9 @@ def create_image_box(id_box, path_default_img, button1_txt='Select an Image', el
     return img_box
 
 
-img_box1 = create_image_box('box-1', button1_txt = 'Select a Content Image', path_default_img=IMG_CONTENT_DIRECTORY/'brad_pitt.jpg')
-img_box2 = create_image_box('box-2', button1_txt = 'Select a Style Image', path_default_img=IMG_STYLE_DIRECTORY/'mosaic.jpg')
-img_box3 = create_image_box('box-3', button1_txt = 'Get Result Image', path_default_img=IMG_OTHER_DIRECTORY/'no_picture.jpg', elmt2_type='download-button', elmt2_msg='Download Image !')
+img_box1 = create_image_group('box-1', button1_txt='Select from Gallery', path_default_img=PATH_DEFAULT_CONTENT)
+img_box2 = create_image_group('box-2', button1_txt='Select from Gallery', path_default_img=PATH_DEFAULT_STYLE)
+img_box3 = create_image_group('box-3', button1_txt='Get Result Image', path_default_img=PATH_DEFAULT_NOPICTURE, elmt2_type='download-button', elmt2_msg=DOWNLOAD_BUTTON_TEXT)
 
 app.layout = html.Div(children=[
     html.H1(children='Pictulize'),
@@ -99,8 +112,10 @@ app.layout = html.Div(children=[
         img_box2,
         img_box3
         ], style={'display':'flex', 'margin-left':'200px'}),
-    html.Div(id='void')
+    html.Div(id='void'),
+    html.Div(id='nst-trigger', style=dict(display='none'))
 ])
+
 
 ## handle user picture upload
 def save_file(name, content, save_dir):
@@ -132,7 +147,7 @@ def create_callback_img_upload(id_img, id_upload, path_default_img, path_save_di
 upload_user_content_img = create_callback_img_upload(id_img='box-1-img', id_upload='box-1-upload', path_default_img=IMG_CONTENT_DIRECTORY/'brad_pitt.jpg', path_save_dir=IMG_USER_DIRECTORY)
 upload_user_style_img = create_callback_img_upload(id_img='box-2-img', id_upload='box-2-upload', path_default_img=IMG_STYLE_DIRECTORY/'mosaic.jpg', path_save_dir=IMG_USER_DIRECTORY)
 
-## run neural style transfer
+## NEURAL STYLE TRANSFER COMPUTATION
 class ButtonCallback():
     def __init__(self):
         self.n_clicks = {'box-1-button-1':0, 'box-2-button-1':0, 'box-3-button-1':0}
@@ -141,22 +156,48 @@ class ButtonCallback():
         self.n_clicks[bt_name] = nclicks
 
 button_callback = ButtonCallback()
+
+
+## display loading image
 @app.callback(
-        Output(component_id="box-3-img", component_property="src"),
-        [Input(component_id='box-3-button-1', component_property='n_clicks')],
+        [Output(component_id="box-3-img", component_property="src"), Output('box-3-button-1', 'disabled'), Output('box-3-button-1', 'style'),Output('box-3-button-1', 'children'), Output('nst-trigger', 'children')],
+        [Input(component_id='box-3-button-1', component_property='n_clicks')]
+        )
+def display_loading(b3_b1_nclick):
+    
+	list_outputs = list()
+	b3_b1_nclick = 0 if b3_b1_nclick is None else b3_b1_nclick
+
+	if b3_b1_nclick > 0:
+	#if b3_b1_nclick != button_callback.n_clicks['box-3-button-1']:
+		button_callback.update_n_clicks(b3_b1_nclick, 'box-3-button-1')
+		list_outputs = [str(PATH_LOADING_ANIMATION), True, dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_DISABLED), PROCESSING_BUTTON_TEXT, 1]
+	else:
+		list_outputs = [str(PATH_DEFAULT_NOPICTURE), True, dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_ENABLED), RUN_NST_BUTTON_TEXT, 0]
+	return list_outputs
+
+
+## run neural style transfer
+@app.callback(
+        [Output("container-box-3-img","children"), Output('container-box-3-button-1', 'children')],
+        [Input(component_id='nst-trigger', component_property='children')],
         [State(component_id="box-1-img", component_property="src"),
          State(component_id="box-2-img", component_property="src")]
         )
-def run_nst(b3_b1_nclick, path_img_content, path_img_style):
-    
-    b3_b1_nclick = 0 if b3_b1_nclick is None else b3_b1_nclick
+def run_nst(value, path_img_content, path_img_style):
+	
+	list_outputs = list()
+	new_button = html.Button(RUN_NST_BUTTON_TEXT, id='box-3-button-1', disabled=False, style=dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_ENABLED))
+	if value == 1:
+		path_img_output = str(Path(IMG_USER_DIRECTORY)/f'output-{time.time()}.jpg') ## add a timestamp to avoid caching problems when name doesn't change
+		path_img_output = apply_neural_style_transfer(path_img_content, path_img_style, path_img_output=path_img_output)
+		new_img = html.Img(id='box-3-img', src=str(path_img_output), style=dict(display='block', width=IMG_BOX_WIDTH, height=IMG_BOX_HEIGHT, margin=IMG_BOX_MARGIN))
+		list_outputs = [new_img, new_button]
+	else:
+		new_img = html.Img(id='box-3-img', src=str(PATH_DEFAULT_NOPICTURE), style=dict(display='block', width=IMG_BOX_WIDTH, height=IMG_BOX_HEIGHT, margin=IMG_BOX_MARGIN))
+		list_outputs = [new_img, new_button]
+	return list_outputs
 
-    if b3_b1_nclick != button_callback.n_clicks['box-3-button-1']:
-        button_callback.update_n_clicks(b3_b1_nclick, 'box-3-button-1')
-        path_img_output = str(Path(IMG_USER_DIRECTORY)/f'output-{time.time()}.jpg') ## add a timestamp to avoid caching problems when name doesn't change
-        return apply_neural_style_transfer(path_img_content, path_img_style, path_img_output=path_img_output)
-    else:
-        return str(IMG_OTHER_DIRECTORY/'no_picture.jpg')
 
 
 ## download file
