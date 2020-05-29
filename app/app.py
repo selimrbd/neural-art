@@ -224,4 +224,4 @@ def update_download_button(path_img):
 
 if __name__ == '__main__':
     #app.run_server(debug=True, port=8086)
-    app.run_server(debug=False, port=5000)
+    app.run_server(debug=False, host='0.0.0.0', port=5000)
