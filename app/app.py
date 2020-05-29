@@ -14,7 +14,7 @@ IMG_CONTENT_DIRECTORY = Path('assets/images/content')
 IMG_STYLE_DIRECTORY = Path('assets/images/style')
 IMG_OTHER_DIRECTORY = Path('assets/images/other')
 if not IMG_USER_DIRECTORY.exists():
-    USER_DIRECTORY.mkdir()
+    IMG_USER_DIRECTORY.mkdir()
 
 APP_NAME = 'Neural Art'
 
@@ -224,4 +224,4 @@ def update_download_button(path_img):
 
 if __name__ == '__main__':
     #app.run_server(debug=True, port=8086)
-    app.run_server(debug=False, port=8086)
+    app.run_server(debug=False, port=5000)
