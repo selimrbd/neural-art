@@ -16,6 +16,8 @@ IMG_OTHER_DIRECTORY = Path('assets/images/other')
 if not IMG_USER_DIRECTORY.exists():
     USER_DIRECTORY.mkdir()
 
+APP_NAME = 'Neural Art'
+
 IMG_BOX_WIDTH = '400px'
 IMG_BOX_HEIGHT = '400px'
 IMG_BOX_MARGIN = '10px'
@@ -35,7 +37,7 @@ PROCESSING_BUTTON_TEXT = 'Processing...'
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-
+app.title = APP_NAME
 
 ## create the element containing the image + image selection / upload / download
 def create_image_group(id_box, path_default_img, button1_txt='Select an Image', elmt2_type='upload', elmt2_msg=html.Div(['Drag and Drop or ', html.A('Select Files')])):
@@ -104,10 +106,14 @@ img_box2 = create_image_group('box-2', button1_txt='Select from Gallery', path_d
 img_box3 = create_image_group('box-3', button1_txt='Get Result Image', path_default_img=PATH_DEFAULT_NOPICTURE, elmt2_type='download-button', elmt2_msg=DOWNLOAD_BUTTON_TEXT)
 
 app.layout = html.Div(children=[
-    html.H1(children='Pictulize'),
-    html.H2(children='Create your art image !'),
+    html.H1(children=APP_NAME),
+    html.Div(id='what-is-this', children=[
+	html.H3(children='What is this ?'),
+	dcc.Markdown('A **free service** to create artistic images in 1 click, by mixing one picture **content** with the **style** of another')
+    ]),
     
-    html.Div(children=[
+    html.H3(children='Create your art image !'),
+    html.Div(id='create-art', children=[
         img_box1,
         img_box2,
         img_box3
