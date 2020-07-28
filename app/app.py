@@ -9,14 +9,14 @@ import base64
 from flask import send_from_directory
 import time
 
+APP_NAME = 'Neural Art'
+
 IMG_USER_DIRECTORY = Path('assets/images/user')
 IMG_CONTENT_DIRECTORY = Path('assets/images/content')
 IMG_STYLE_DIRECTORY = Path('assets/images/style')
 IMG_OTHER_DIRECTORY = Path('assets/images/other')
 if not IMG_USER_DIRECTORY.exists():
     IMG_USER_DIRECTORY.mkdir()
-
-APP_NAME = 'Neural Art'
 
 IMG_BOX_WIDTH = '400px'
 IMG_BOX_HEIGHT = '400px'
@@ -39,7 +39,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = APP_NAME
 
-## create the element containing the image + image selection / upload / download
+## create the element containing the (image + image selection / upload / download)
 def create_image_group(id_box, path_default_img, button1_txt='Select an Image', elmt2_type='upload', elmt2_msg=html.Div(['Drag and Drop or ', html.A('Select Files')])):
     
     elmt_list = list()
@@ -108,8 +108,8 @@ img_box3 = create_image_group('box-3', button1_txt='Get Result Image', path_defa
 app.layout = html.Div(children=[
     html.H1(children=APP_NAME),
     html.Div(id='what-is-this', children=[
-	html.H3(children='What is this ?'),
-	dcc.Markdown('A **free service** to create artistic images in 1 click, by mixing one picture **content** with the **style** of another')
+    html.H3(children='What is this ?'),
+    dcc.Markdown('A **free service** to create artistic images in 1 click, by mixing one picture **content** with the **style** of another')
     ]),
     
     html.H3(children='Create your art image !'),
@@ -157,12 +157,10 @@ upload_user_style_img = create_callback_img_upload(id_img='box-2-img', id_upload
 class ButtonCallback():
     def __init__(self):
         self.n_clicks = {'box-1-button-1':0, 'box-2-button-1':0, 'box-3-button-1':0}
-
     def update_n_clicks(self, nclicks, bt_name):
         self.n_clicks[bt_name] = nclicks
 
 button_callback = ButtonCallback()
-
 
 ## display loading image
 @app.callback(
@@ -171,16 +169,16 @@ button_callback = ButtonCallback()
         )
 def display_loading(b3_b1_nclick):
     
-	list_outputs = list()
-	b3_b1_nclick = 0 if b3_b1_nclick is None else b3_b1_nclick
+    list_outputs = list()
+    b3_b1_nclick = 0 if b3_b1_nclick is None else b3_b1_nclick
 
-	if b3_b1_nclick > 0:
-	#if b3_b1_nclick != button_callback.n_clicks['box-3-button-1']:
-		button_callback.update_n_clicks(b3_b1_nclick, 'box-3-button-1')
-		list_outputs = [str(PATH_LOADING_ANIMATION), True, dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_DISABLED), PROCESSING_BUTTON_TEXT, 1]
-	else:
-		list_outputs = [str(PATH_DEFAULT_NOPICTURE), True, dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_ENABLED), RUN_NST_BUTTON_TEXT, 0]
-	return list_outputs
+    if b3_b1_nclick > 0:
+    #if b3_b1_nclick != button_callback.n_clicks['box-3-button-1']:
+        button_callback.update_n_clicks(b3_b1_nclick, 'box-3-button-1')
+        list_outputs = [str(PATH_LOADING_ANIMATION), True, dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_DISABLED), PROCESSING_BUTTON_TEXT, 1]
+    else:
+        list_outputs = [str(PATH_DEFAULT_NOPICTURE), True, dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_ENABLED), RUN_NST_BUTTON_TEXT, 0]
+    return list_outputs
 
 
 ## run neural style transfer
@@ -191,27 +189,25 @@ def display_loading(b3_b1_nclick):
          State(component_id="box-2-img", component_property="src")]
         )
 def run_nst(value, path_img_content, path_img_style):
-	
-	list_outputs = list()
-	new_button = html.Button(RUN_NST_BUTTON_TEXT, id='box-3-button-1', disabled=False, style=dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_ENABLED))
-	if value == 1:
-		path_img_output = str(Path(IMG_USER_DIRECTORY)/f'output-{time.time()}.jpg') ## add a timestamp to avoid caching problems when name doesn't change
-		path_img_output = apply_neural_style_transfer(path_img_content, path_img_style, path_img_output=path_img_output)
-		new_img = html.Img(id='box-3-img', src=str(path_img_output), style=dict(display='block', width=IMG_BOX_WIDTH, height=IMG_BOX_HEIGHT, margin=IMG_BOX_MARGIN))
-		list_outputs = [new_img, new_button]
-	else:
-		new_img = html.Img(id='box-3-img', src=str(PATH_DEFAULT_NOPICTURE), style=dict(display='block', width=IMG_BOX_WIDTH, height=IMG_BOX_HEIGHT, margin=IMG_BOX_MARGIN))
-		list_outputs = [new_img, new_button]
-	return list_outputs
 
-
+    list_outputs = list()
+    new_button = html.Button(RUN_NST_BUTTON_TEXT, id='box-3-button-1', disabled=False, style=dict(display='block', width=IMG_BOX_WIDTH, margin=IMG_BOX_MARGIN, backgroundColor=COLOR_BUTTON_ENABLED))
+    if value == 1:
+        path_img_output = str(Path(IMG_USER_DIRECTORY)/f'output-{time.time()}.jpg') ## add a timestamp to avoid caching problems when name doesn't change
+        path_img_output = apply_neural_style_transfer(path_img_content, path_img_style, path_img_output=path_img_output)
+        new_img = html.Img(id='box-3-img', src=str(path_img_output), style=dict(display='block', width=IMG_BOX_WIDTH, height=IMG_BOX_HEIGHT, margin=IMG_BOX_MARGIN))
+        list_outputs = [new_img, new_button]
+    else:
+        new_img = html.Img(id='box-3-img', src=str(PATH_DEFAULT_NOPICTURE), style=dict(display='block', width=IMG_BOX_WIDTH, height=IMG_BOX_HEIGHT, margin=IMG_BOX_MARGIN))
+        list_outputs = [new_img, new_button]
+    return list_outputs
 
 ## download file
 @app.server.route('/download_image/<string:img_name>')
 def download_file(img_name):
-	print(f'user downloaded image: {img_name}')
-	return send_from_directory(str(IMG_USER_DIRECTORY), img_name, as_attachment=True)
-	
+    print(f'user downloaded image: {img_name}')
+    return send_from_directory(str(IMG_USER_DIRECTORY), img_name, as_attachment=True)
+
 @app.callback(
         Output('box-3-download-form', 'action'),
         [Input('box-3-img', 'src')]
@@ -220,8 +216,6 @@ def update_download_button(path_img):
     img_name = Path(path_img).name
     return f'/download_image/{img_name}'
 
-
-
 if __name__ == '__main__':
-    #app.run_server(debug=True, port=8086)
+    #app.run_server(debug=True, port=5000)
     app.run_server(debug=False, host='0.0.0.0', port=5000)
