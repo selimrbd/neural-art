@@ -10,7 +10,7 @@ from PIL import Image
 import time
 
 ## paths definitions
-path_model_folder = Path('model')
+path_model_folder = Path(__file__).parent/'../model'
 
 ## load nst model
 hub_module = hub.load(str(path_model_folder))

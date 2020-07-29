@@ -1,9 +1,14 @@
 # Neural art
 
 Minimal web application for creating artistic pictures through neural style transfer
-(nst model from [tensorflow hub](https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/int8/transfer/1))
 
-![preview](app/assets/preview.gif)
+![preview](./app/assets/preview.gif)
+
+## About
+
+* Webapp built using [Dash](https://dash.plotly.com/)
+* NST model used is from [tensorflow hub's magenta](https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/int8/transfer/1))
+
 
 ## Setup
 
@@ -16,3 +21,9 @@ Then run the following to download the NST model from tensorflow hub:
 python setup.py
 ```
 
+## Launch
+
+cd in `app/` and run
+```
+python app.py
+```

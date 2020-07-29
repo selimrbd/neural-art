@@ -11,10 +11,13 @@ import time
 
 APP_NAME = 'Neural Art'
 
-IMG_USER_DIRECTORY = Path('assets/images/user')
-IMG_CONTENT_DIRECTORY = Path('assets/images/content')
-IMG_STYLE_DIRECTORY = Path('assets/images/style')
-IMG_OTHER_DIRECTORY = Path('assets/images/other')
+ROOT_PATH = Path(__file__).parent
+
+IMG_USER_DIRECTORY = ROOT_PATH/'assets/images/user'
+
+IMG_CONTENT_DIRECTORY = ROOT_PATH/'assets/images/content'
+IMG_STYLE_DIRECTORY = ROOT_PATH/'assets/images/style'
+IMG_OTHER_DIRECTORY = ROOT_PATH/'assets/images/other'
 if not IMG_USER_DIRECTORY.exists():
     IMG_USER_DIRECTORY.mkdir()
 
@@ -24,12 +27,10 @@ IMG_BOX_MARGIN = '10px'
 COLOR_BUTTON_DISABLED = 'rgba(191, 191, 191, 1)'
 COLOR_BUTTON_ENABLED = 'rgba(41, 241, 195, 1)'
 
-#PATH_LOADING_ANIMATION = Path('assets/images/other/slowpoke.gif')
-#PATH_LOADING_ANIMATION = Path('assets/images/other/poulpe.gif')
-PATH_LOADING_ANIMATION = Path('assets/images/other/rainbow.gif')
-PATH_DEFAULT_CONTENT = Path('assets/images/content/brad_pitt.jpg')
-PATH_DEFAULT_STYLE = Path('assets/images/style/mosaic.jpg')
-PATH_DEFAULT_NOPICTURE = Path('assets/images/other/no_picture.jpg')
+PATH_LOADING_ANIMATION = IMG_OTHER_DIRECTORY/'rainbow.gif'
+PATH_DEFAULT_CONTENT = IMG_CONTENT_DIRECTORY/'brad_pitt.jpg'
+PATH_DEFAULT_STYLE = IMG_STYLE_DIRECTORY/'mosaic.jpg'
+PATH_DEFAULT_NOPICTURE = IMG_OTHER_DIRECTORY/'no_picture.jpg'
 
 DOWNLOAD_BUTTON_TEXT = 'Download'
 RUN_NST_BUTTON_TEXT = 'Combine the images !'

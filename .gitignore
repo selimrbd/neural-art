@@ -2,8 +2,4 @@ model/
 __pycache__
 .ipynb_checkpoints/
 *.ico
-*.png
-*.jpg
-*.jpeg
-app/assets/images/
 neural-art-env
