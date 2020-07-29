@@ -11,7 +11,9 @@ import time
 
 APP_NAME = 'Neural Art'
 
-ROOT_PATH = Path(__file__).parent
+
+ROOT_PATH = Path('.')
+#ROOT_PATH = Path(__file__).parent
 
 IMG_USER_DIRECTORY = ROOT_PATH/'assets/images/user'
 
@@ -39,6 +41,8 @@ PROCESSING_BUTTON_TEXT = 'Processing...'
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = APP_NAME
+server = app.server
+
 
 ## create the element containing the (image + image selection / upload / download)
 def create_image_group(id_box, path_default_img, button1_txt='Select an Image', elmt2_type='upload', elmt2_msg=html.Div(['Drag and Drop or ', html.A('Select Files')])):
