@@ -7,7 +7,7 @@ Minimal web application for creating artistic pictures through neural style tran
 ## About
 
 * Webapp built using [Dash](https://dash.plotly.com/)
-* NST model used is from [tensorflow hub's magenta](https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/int8/transfer/1))
+* NST model used is from [tensorflow hub's magenta](https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/int8/transfer/1)
 
 
 ## Setup
