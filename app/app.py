@@ -11,9 +11,7 @@ import time
 
 APP_NAME = 'Neural Art'
 
-
 ROOT_PATH = Path('.')
-#ROOT_PATH = Path(__file__).parent
 
 IMG_USER_DIRECTORY = ROOT_PATH/'assets/images/user'
 
@@ -22,24 +20,21 @@ IMG_STYLE_DIRECTORY = ROOT_PATH/'assets/images/style'
 IMG_OTHER_DIRECTORY = ROOT_PATH/'assets/images/other'
 if not IMG_USER_DIRECTORY.exists():
     IMG_USER_DIRECTORY.mkdir()
-
 IMG_BOX_WIDTH = '400px'
 IMG_BOX_HEIGHT = '400px'
 IMG_BOX_MARGIN = '10px'
 COLOR_BUTTON_DISABLED = 'rgba(191, 191, 191, 1)'
 COLOR_BUTTON_ENABLED = 'rgba(41, 241, 195, 1)'
-
 PATH_LOADING_ANIMATION = IMG_OTHER_DIRECTORY/'rainbow.gif'
 PATH_DEFAULT_CONTENT = IMG_CONTENT_DIRECTORY/'brad_pitt.jpg'
 PATH_DEFAULT_STYLE = IMG_STYLE_DIRECTORY/'mosaic.jpg'
 PATH_DEFAULT_NOPICTURE = IMG_OTHER_DIRECTORY/'no_picture.jpg'
-
 DOWNLOAD_BUTTON_TEXT = 'Download'
 RUN_NST_BUTTON_TEXT = 'Combine the images !'
 PROCESSING_BUTTON_TEXT = 'Processing...'
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, url_base_pathname='/projects/neural-art')
 app.title = APP_NAME
 server = app.server
 
