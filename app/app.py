@@ -9,7 +9,7 @@ import base64
 from flask import send_from_directory
 import time
 
-APP_NAME = 'Neural Art'
+APP_NAME = 'neural-art'
 
 ROOT_PATH = Path('.')
 
@@ -34,7 +34,8 @@ RUN_NST_BUTTON_TEXT = 'Combine the images !'
 PROCESSING_BUTTON_TEXT = 'Processing...'
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets, url_base_pathname='/projects/neural-art')
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, url_base_pathname='/projects/neural-art/')
+#app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = APP_NAME
 server = app.server
 
