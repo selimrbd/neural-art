@@ -32,9 +32,12 @@ PATH_DEFAULT_NOPICTURE = IMG_OTHER_DIRECTORY/'no_picture.jpg'
 DOWNLOAD_BUTTON_TEXT = 'Download'
 RUN_NST_BUTTON_TEXT = 'Combine the images !'
 PROCESSING_BUTTON_TEXT = 'Processing...'
+PATH_APP_ON_WEBSERVER = '/projects/neural-art/'
+assert PATH_APP_ON_WEBSERVER[-1] == '/' #assert that path ends with /, a necessary condition for dash.Dash(url_base_pathname) to work properly
+
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets, url_base_pathname='/projects/neural-art/')
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, url_base_pathname=PATH_APP_ON_WEBSERVER)
 #app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = APP_NAME
 server = app.server
@@ -204,7 +207,7 @@ def run_nst(value, path_img_content, path_img_style):
     return list_outputs
 
 ## download file
-@app.server.route('/download_image/<string:img_name>')
+@app.server.route(PATH_APP_ON_WEBSERVER+'download_image/<string:img_name>')
 def download_file(img_name):
     print(f'user downloaded image: {img_name}')
     return send_from_directory(str(IMG_USER_DIRECTORY), img_name, as_attachment=True)
@@ -215,7 +218,7 @@ def download_file(img_name):
         )
 def update_download_button(path_img):
     img_name = Path(path_img).name
-    return f'/download_image/{img_name}'
+    return f'{PATH_APP_ON_WEBSERVER}download_image/{img_name}'
 
 if __name__ == '__main__':
     #app.run_server(debug=True, port=5000)
